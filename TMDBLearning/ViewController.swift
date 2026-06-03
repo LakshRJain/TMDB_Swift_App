@@ -10,13 +10,20 @@ final class ViewController: UIViewController {
         style: .large
     )
 
+    private let searchController =
+        UISearchController(
+            searchResultsController: nil
+        )
+    
+    private var searchTask: Task<Void, Never>?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
         title = "Trending Movies"
 
         view.backgroundColor = .systemBackground
-
+        setupSearchController()
         setupTableView()
         setupActivityIndicator()
         bindViewModel()
@@ -129,6 +136,21 @@ final class ViewController: UIViewController {
             present(alert, animated: true)
         }
     }
+    
+    private func setupSearchController() {
+
+        navigationItem.searchController =
+            searchController
+
+        searchController.searchBar.delegate =
+            self
+
+        searchController.obscuresBackgroundDuringPresentation =
+            false
+
+        searchController.searchBar.placeholder =
+            "Search Movies"
+    }
 }
 
 extension ViewController: UITableViewDataSource {
@@ -182,4 +204,54 @@ extension ViewController: UITableViewDelegate {
             animated: true
         )
     }
+    
+    func tableView(
+        _ tableView: UITableView,
+        willDisplay cell: UITableViewCell,
+        forRowAt indexPath: IndexPath
+    ) {
+
+        let lastRow =
+            viewModel.movies.count - 1
+
+        if indexPath.row == lastRow {
+
+            Task {
+
+                await viewModel.loadNextPage()
+            }
+        }
+    }
+}
+
+extension ViewController: UISearchBarDelegate {
+
+    func searchBar(
+        _ searchBar: UISearchBar,
+        textDidChange searchText: String
+    ) {
+        searchTask?.cancel()
+
+        searchTask = Task {
+
+            try? await Task.sleep(
+                for: .milliseconds(300)
+            )
+
+            if Task.isCancelled {
+                return
+            }
+
+            await viewModel.searchMovies(
+                query: searchText
+            )
+        }
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        Task {
+            await viewModel.fetchMovies()
+        }
+    }
+    
 }
