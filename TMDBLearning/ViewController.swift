@@ -37,10 +37,11 @@ final class ViewController: UIViewController {
     }
 
     private func setupTableView() {
-
+        
         tableView.translatesAutoresizingMaskIntoConstraints = false
 
         tableView.dataSource = self
+        tableView.delegate = self
 
         tableView.rowHeight = 140
 
@@ -85,8 +86,7 @@ final class ViewController: UIViewController {
 
             activityIndicator.centerYAnchor.constraint(
                 equalTo: view.centerYAnchor
-            )
-        ])
+            )        ])
     }
 
     private func updateUI() {
@@ -159,5 +159,27 @@ extension ViewController: UITableViewDataSource {
         cell.configure(with: movie)
 
         return cell
+    }
+}
+
+extension ViewController: UITableViewDelegate {
+
+    func tableView(
+        _ tableView: UITableView,
+        didSelectRowAt indexPath: IndexPath
+    ) {
+
+        let movie =
+            viewModel.movies[indexPath.row]
+
+        let detailsVC =
+            MovieDetailsViewController(
+                movie: movie
+            )
+
+        navigationController?.pushViewController(
+            detailsVC,
+            animated: true
+        )
     }
 }

@@ -9,7 +9,12 @@ import Foundation
 
 
 final class TMDBService : MovieServiceProtocol {
-    private let bearerToken = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI5YWRhZGI5MjRmODMwMDFiYzQzMjI5OTcwNDU4YjUwMCIsIm5iZiI6MTc4MDM4MjEzMy44MDYwMDAyLCJzdWIiOiI2YTFlNzliNWRhMGMwZDAzY2IyNjVlYTkiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.JILF3xrRPohX8D1c9lwY6o4RGqk2EnygCYidTkkfz7U"
+    private var bearerToken: String {
+        guard let token = Bundle.main.object(forInfoDictionaryKey: "TMDBBearerToken") as? String else {
+            fatalError("TMDB Bearer Token missing from Info.plist configuration.")
+        }
+        return token
+    }
     
     func fetchTrendingMovies() async throws -> [Movie] {
         let url = URL(
