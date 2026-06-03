@@ -1,0 +1,14 @@
+Task {
+
+        do {
+
+            let movies = try await TMDBService()
+                .fetchTrendingMovies()
+
+            print(movies)
+
+        } catch {
+
+            print(error)
+        }
+    }

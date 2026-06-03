@@ -1,0 +1,12 @@
+# Xcode build artifacts and temporary files
+DerivedData/
+build/
+*.xcuserstate
+
+# Personal user settings (prevents merge conflicts)
+xcuserdata/
+*.xcodeproj/xcuserdata/
+*.xcworkspace/xcuserdata/
+
+# macOS system files
+.DS_Store
