@@ -12,3 +12,7 @@ xcuserdata/
 .DS_Store
 
 Secrets.xcconfig
+
+# Google Firebase Configuration for iOS
+GoogleService-Info.plist
+**/GoogleService-Info.plist

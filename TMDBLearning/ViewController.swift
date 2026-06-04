@@ -1,7 +1,9 @@
 import UIKit
+import FirebaseAuth
 
 final class ViewController: UIViewController {
-
+    private let authService = AuthService()
+    
     private let viewModel = MovieListViewModel()
 
     private let tableView = UITableView()
@@ -22,6 +24,13 @@ final class ViewController: UIViewController {
 
         title = "Trending Movies"
 
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            title: "Logout",
+            style: .plain,
+            target: self,
+            action: #selector(logoutTapped)
+        )
+        
         view.backgroundColor = .systemBackground
         setupSearchController()
         setupTableView()
@@ -254,4 +263,52 @@ extension ViewController: UISearchBarDelegate {
         }
     }
     
+    @objc
+    private func logoutTapped() {
+
+        let alert = UIAlertController(
+            title: "Logout",
+            message: "Are you sure you want to logout?",
+            preferredStyle: .alert
+        )
+
+        alert.addAction(
+            UIAlertAction(
+                title: "Cancel",
+                style: .cancel
+            )
+        )
+
+        alert.addAction(
+            UIAlertAction(
+                title: "Logout",
+                style: .destructive
+            ) { [weak self] _ in
+
+                guard let self = self else { return }
+
+                do {
+
+                    try self.authService.signOut()
+
+                    let loginVC = UINavigationController(
+                        rootViewController: LoginViewController()
+                    )
+
+                    if let sceneDelegate = self.view.window?
+                        .windowScene?
+                        .delegate as? SceneDelegate {
+
+                        sceneDelegate.window?.rootViewController = loginVC
+                    }
+
+                } catch {
+
+                    print(error)
+                }
+            }
+        )
+
+        present(alert, animated: true)
+    }
 }
